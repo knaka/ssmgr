@@ -11,7 +11,7 @@
  * argument is a `String` with the title of the page, the second
  * argument is an `Html` object containing the body of the page.
  *@
-@main("Welcome to Play") {
+@main("Generated Table") {
 
   <script type="text/javascript">
     $(document).ready(function() {
@@ -98,7 +98,7 @@
     @for(i <- 0 to 25) {
       <td nowrap
       @{
-        val pattern = """^ *-?[0-9, ]+ *$""".r
+        val pattern = """^ *-?[0-9.,% ]+ *$""".r
         pattern.findFirstIn(row(i)) match {
           case Some(x) => "align=right"
           case _ => ""
