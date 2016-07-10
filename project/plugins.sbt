@@ -20,3 +20,4 @@ addSbtPlugin("org.irundaia.sbt" % "sbt-sassify" % "1.4.2")
 // addSbtPlugin("org.ensime" % "ensime-sbt-cmd" % "latest.integration")
 addSbtPlugin("org.ensime" % "sbt-ensime" % "0.6.0")
 
+addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "4.0.0")
