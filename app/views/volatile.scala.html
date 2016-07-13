@@ -2,7 +2,7 @@
  * This template takes a single argument, a String containing a
  * message to display.
  *@
-@(message: String)
+ @(message: String, rows: List[List[String]])
 
 @*
  * Call the `main` template with two arguments. The first
@@ -23,4 +23,104 @@
       }
     }
   </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $("#myTable").DataTable();
+    });
+  </script>
+
+    @*
+     * Get an `Html` object by calling the built-in Play welcome
+     * template and passing a `String` message.
+     *@
+    <!-- @play20.welcome(message, style = "Scala") -->
+    <p>@message</p>
+    <p>
+
+    <table id="myTable" class="display" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+  <td>上場日</td>
+  <td>社名</td>
+  <td>証券コード</td>
+  <td>市場</td>
+  <td>業種</td>
+  <td>主幹事証券</td>
+  <td>公募価格（円）</td>
+  <td>公募株数（千株）</td>
+  <td>調達額（億円）</td>
+  <td>公募時時価総額（億円）</td>
+  <td>直前期</td>
+  <td>前期売上高（百万円）</td>
+  <td>前期純利益（百万円）</td>
+  <td>公募時PER</td>
+  <td>公募時PBR</td>
+  <td>公募時EV/EBITDA</td>
+  <td>IPO初値（円）</td>
+  <td>公募比（％）</td>
+  <td>初日終値（円）</td>
+  <td>公募比（％）</td>
+  <td>予想売上高（百万円）</td>
+  <td>予想売上高（成長率）</td>
+  <td>予想純利益（百万円）</td>
+  <td>予想純利益（成長率）</td>
+  <td>予想PER</td>
+  <td>公募後PBR</td>
+  </tr>
+  </thead>
+
+  <tfoot>
+    <tr>
+  <td nowrap>上場日</td>
+  <td nowrap>社名</td>
+  <td nowrap>証券コード</td>
+  <td nowrap>市場</td>
+  <td nowrap>業種</td>
+  <td nowrap>主幹事証券</td>
+  <td nowrap>公募価格（円）</td>
+  <td nowrap>公募株数（千株）</td>
+  <td nowrap>調達額（億円）</td>
+  <td nowrap>公募時時価総額（億円）</td>
+  <td nowrap>直前期</td>
+  <td nowrap>前期売上高（百万円）</td>
+  <td nowrap>前期純利益（百万円）</td>
+  <td nowrap>公募時PER</td>
+  <td nowrap>公募時PBR</td>
+  <td nowrap>公募時EV/EBITDA</td>
+  <td nowrap>IPO初値（円）</td>
+  <td nowrap>公募比（％）</td>
+  <td nowrap>初日終値（円）</td>
+  <td nowrap>公募比（％）</td>
+  <td nowrap>予想売上高（百万円）</td>
+  <td nowrap>予想売上高（成長率）</td>
+  <td nowrap>予想純利益（百万円）</td>
+  <td nowrap>予想純利益（成長率）</td>
+  <td nowrap>予想PER</td>
+  <td nowrap>公募後PBR</td>
+  </tr>
+  </tfoot>
+  <tbody>
+
+  <!-- ここにデータ -->
+
+  @for(row <- rows) {
+    <tr>
+    @for(i <- 0 to 25) {
+      <td nowrap
+      @{
+        val pattern = """^ *-?[0-9.,% ]+ *$""".r
+        pattern.findFirstIn(row(i)) match {
+          case Some(x) => "align=right"
+          case _ => ""
+        }
+      }
+      >@{row(i)}</td>
+    }
+    </tr>
+  }
+
+  </tbody>
+  </table>
+
 }

@@ -23,17 +23,24 @@ object Util {
           case Cell.CELL_TYPE_FORMULA => 'numeric
           case Cell.CELL_TYPE_NUMERIC => 'numeric
           case Cell.CELL_TYPE_STRING => 'string
-          case _ => "ERROR"
+          case _ => 'error
         }
       })
     })
     val numcol = header.iterator.toList.length
     val f: Boolean = sampletypes.tail.forall(e => e == sampletypes.head)
     val types = sampletypes.head
-    // DDL
+    // Create DDL
+    val bld = new StringBuilder
     (0 to (numcol - 1)).foreach { i =>
-      println(s"  col${i} ${types(i)}")
+      // val
+      bld.append(s"col$i text\n")
     }
+    println(bld.result)
+    val ddl = "CREATE TABLE foo (" + (0 to (numcol - 1)).map({ i =>
+      // s"col${i} ${types(i)}"
+      s"col${i} text"
+    }).mkString(", ") + ")"
     // data
     body.take(2).map { rowPoi =>
       val row = rowPoi.toList
