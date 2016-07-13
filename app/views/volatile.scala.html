@@ -1,0 +1,26 @@
+@*
+ * This template takes a single argument, a String containing a
+ * message to display.
+ *@
+@(message: String)
+
+@*
+ * Call the `main` template with two arguments. The first
+ * argument is a `String` with the title of the page, the second
+ * argument is an `Html` object containing the body of the page.
+ *@
+@main("Volatile page") {
+  <form action="/volatile/post" enctype="multipart/form-data" class="dropzone" id="my-awesome-dropzone" method="post">
+    <!-- <input type="file" name="the_file" /> -->
+    <!-- <input type="submit" value="送信する"> -->
+  </form>
+  <script type="text/javascript">
+    Dropzone.options.myAwesomeDropzone = {
+      method: "post",
+      paramName: "the_file", // Dropzone does not refer type “file” input
+      queuecomplete: function() {
+        location.reload()
+      }
+    }
+  </script>
+}

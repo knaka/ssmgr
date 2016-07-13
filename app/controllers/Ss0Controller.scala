@@ -75,6 +75,6 @@ class Ss0Controller @Inject() extends Controller {
         e.printStackTrace()
       }
     }
-    Ok(views.html.table("Spreadsheet data in table “ss0”.", rows))
+    Ok(views.html.table("Spreadsheet data in table “ss0”. Baz", rows))
   }
 }

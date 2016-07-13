@@ -16,3 +16,4 @@ project/sbt-ui.sbt
 .ensime*
 *.class
 .*
+/bin/
