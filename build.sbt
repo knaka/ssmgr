@@ -20,6 +20,8 @@ val poiVersion = "latest.integration"
 libraryDependencies += "org.apache.poi" % "poi" % poiVersion
 libraryDependencies += "org.apache.poi" % "poi-ooxml" % poiVersion
 
+libraryDependencies += evolutions
+
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
 
 

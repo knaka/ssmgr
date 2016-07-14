@@ -2,12 +2,12 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# An example controller showing a sample home page
-GET     /                           controllers.HomeController.index
-# An example controller showing how to use dependency injection
-GET     /count                      controllers.CountController.count
-# An example controller showing how to write asynchronous code
-GET     /message                    controllers.AsyncController.message
+# # An example controller showing a sample home page
+# GET     /                           controllers.HomeController.index
+# # An example controller showing how to use dependency injection
+# GET     /count                      controllers.CountController.count
+# # An example controller showing how to write asynchronous code
+# GET     /message                    controllers.AsyncController.message
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
@@ -16,3 +16,11 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 GET     /volatile                   controllers.Volatile.index
 POST    /volatile/post              controllers.Volatile.post
+
+GET     /sheets                             controllers.Sheet.list
+POST    /sheets                             controllers.Sheet.create
+GET     /sheets/$id<[a-zA-Z_0-9]+>          controllers.Sheet.read(id: String)
+PUT     /sheets/$id<[a-zA-Z_0-9]+>          controllers.Sheet.update(id: String)
+
+# POST    /sheets                             controllers.Sheet.create
+# DELETE  /sheets/$id<[a-zA-Z_][a-zA-Z_0-9]+> controllers.Sheet.delete(id: Long)

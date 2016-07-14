@@ -1,0 +1,18 @@
+@(id: String)
+
+@main("Sheet") {
+  <form action="@routes.Sheet.update(id)" enctype="multipart/form-data" class="dropzone" id="my-awesome-dropzone" method="post">
+
+    <!-- <input type="file" name="the_file" /> -->
+    <!-- <input type="submit" value="送信する"> -->
+  </form>
+  <script type="text/javascript">
+    Dropzone.options.myAwesomeDropzone = {
+      method: "post",
+      paramName: "the_file", // Dropzone does not refer type “file” input
+      queuecomplete: function() {
+        location.reload()
+      }
+    }
+  </script>
+}

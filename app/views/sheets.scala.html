@@ -1,0 +1,27 @@
+@*
+ * This template takes a single argument, a String containing a
+ * message to display.
+ *@
+@(sheets: List[SheetData])
+
+@import scala.util.matching.Regex
+
+@*
+ * Call the `main` template with two arguments. The first
+ * argument is a `String` with the title of the page, the second
+ * argument is an `Html` object containing the body of the page.
+ *@
+@main("Sheets") {
+  @helper.form(action = routes.Sheet.create()) {
+    <p>Sheet Name (Used as ID): <input type="text" name="name">
+    <p>Readable Sheet Name: <input type="text" name="readable_name">
+    <p><input type="submit" value="Submit">
+  }
+  <p>Sheets:
+  <ul>
+  @for(sheet <- sheets) {
+    <li><a href="@controllers.routes.Sheet.list/@sheet.name"
+      >@sheet.readable_name</a></td>
+  }
+  </ul>
+}
