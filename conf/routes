@@ -18,9 +18,10 @@ GET     /volatile                   controllers.Volatile.index
 POST    /volatile/post              controllers.Volatile.post
 
 GET     /sheets                             controllers.Sheet.list
+GET     /sheets/                            controllers.Sheet.list
 POST    /sheets                             controllers.Sheet.create
-GET     /sheets/$id<[a-zA-Z_0-9]+>          controllers.Sheet.read(id: String)
-PUT     /sheets/$id<[a-zA-Z_0-9]+>          controllers.Sheet.update(id: String)
+GET     /sheets/$name<[a-zA-Z_0-9]+>          controllers.Sheet.read(name: String)
+PUT     /sheets/$name<[a-zA-Z_0-9]+>          controllers.Sheet.update(name: String)
 
 # POST    /sheets                             controllers.Sheet.create
-# DELETE  /sheets/$id<[a-zA-Z_][a-zA-Z_0-9]+> controllers.Sheet.delete(id: Long)
+# DELETE  /sheets/$name<[a-zA-Z_][a-zA-Z_0-9]+> controllers.Sheet.delete(name: Long)

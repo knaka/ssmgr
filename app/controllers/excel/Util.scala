@@ -6,8 +6,57 @@ import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.ss.usermodel.IndexedColors
 import collection.JavaConversions._
 
+/*
+:reset
+:paste -raw app/controllers/excel/Util.scala
+import controllers.excel.XlsxFile
+val xlsx = controllers.excel.XlsxFile.apply()
+
+*/
+
+object XlsxFile {
+  class XlsxFile(
+    file: File
+  ) {
+    // val filename: String = "/Users/knaka/doc/2016/sakuragumi/dummy_data_2-mod.xlsx"
+    // val filename: String = "/Users/knaka/doc/2016/sakuragumi/simple.xlsx"
+    // val file = new File(filename)
+    lazy val formatter = new DataFormatter()
+    lazy val workbook = WorkbookFactory.create(file)
+    lazy val sheet = workbook.getSheetAt(0)
+    lazy val headerPoi::bodyPoi = sheet.iterator.toList
+    lazy val colmax = { headerPoi.iterator.toList.length }
+    val header = headerPoi.iterator.toList.map {cell =>
+      formatter.formatCellValue(cell)
+    }
+    val creationHelper = workbook.getCreationHelper
+    val evaluator = creationHelper.createFormulaEvaluator
+    lazy val body = bodyPoi.map {row =>
+      row.iterator.toList.map {cell =>
+        cell.getCellType match {
+          case Cell.CELL_TYPE_FORMULA => {
+            // cell.getNumericCellValue.toString
+            val cellResult = evaluator.evaluateInCell(cell)
+            formatter.formatCellValue(cellResult)
+          }
+          case _ => {
+            val s = formatter.formatCellValue(cell)
+          }
+        }
+      }
+    }
+  }
+  def apply(file: File): XlsxFile = {
+    new XlsxFile(file)
+  }
+  def apply(filename: String): XlsxFile = {
+    apply(new File(filename))
+  }
+}
+
 object Util {
   def main(args: Array[String]): Unit = {
+    val xlsx = XlsxFile("/Users/knaka/doc/2016/sakuragumi/dummy_data_2-mod.xlsx")
     val filename = "/Users/knaka/doc/2016/sakuragumi/dummy_data_2-mod.xlsx"
     val workbook = WorkbookFactory.create(new File(filename))
     val sheet = workbook.getSheetAt(0)
@@ -36,12 +85,13 @@ object Util {
       // val
       bld.append(s"col$i text\n")
     }
-    println(bld.result)
+    // println(bld.result)
     val ddl = "CREATE TABLE foo (" + (0 to (numcol - 1)).map({ i =>
       // s"col${i} ${types(i)}"
       s"col${i} text"
     }).mkString(", ") + ")"
     // data
+    val formatter = new DataFormatter()
     body.take(2).map { rowPoi =>
       val row = rowPoi.toList
       val l = (0 to (numcol - 1)).map { i =>
@@ -52,9 +102,11 @@ object Util {
           case Cell.CELL_TYPE_ERROR => ""
           case Cell.CELL_TYPE_FORMULA =>
             if (types(i) == 'string) {
-              cell.getStringCellValue()
+              formatter.formatCellValue(cell)
+              // cell.getStringCellValue()
             } else {
-              cell.getStringCellValue()
+              formatter.formatCellValue(cell)
+              // cell.getStringCellValue()
               // cell.getNumericCellValue.toString
             }
           case Cell.CELL_TYPE_NUMERIC => cell.getNumericCellValue.toString

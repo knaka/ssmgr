@@ -1,18 +1,54 @@
-@(id: String)
+@(id: Int, name: String, readable_name: String, header: List[String], body: List[List[String]])
 
 @main("Sheet") {
-  <form action="@routes.Sheet.update(id)" enctype="multipart/form-data" class="dropzone" id="my-awesome-dropzone" method="post">
-
-    <!-- <input type="file" name="the_file" /> -->
-    <!-- <input type="submit" value="送信する"> -->
+  <form action="@routes.Sheet.update(name)" enctype="multipart/form-data" class="dropzone" id="my-awesome-dropzone" method="post">
   </form>
   <script type="text/javascript">
     Dropzone.options.myAwesomeDropzone = {
-      method: "post",
+      method: "put",
       paramName: "the_file", // Dropzone does not refer type “file” input
       queuecomplete: function() {
         location.reload()
       }
     }
+  </script>
+  <p>ID: @{id} | Name: @{name} | Readable Name: @{readable_name}
+  <table id="myTable" class="display" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+      @for(col <- header) {
+        <td>@col</td>
+      }
+      </tr>
+    </thead>
+    <tfoot>
+      <tr>
+      @for(col <- header) {
+        <td>@col</td>
+      }
+      </tr>
+    </tfoot>
+    <tbody>
+    @for(row <- body) {
+      <tr>
+      @for(col <- row) {
+        <td nowrap
+          @{
+            val pattern = """^ *-?[0-9.,% ]+ *$""".r
+            pattern.findFirstIn(col) match {
+              case Some(x) => "align=right"
+              case _ => ""
+            }
+          }
+        >@col</td>
+      }
+      </tr>
+    }
+    </tbody>
+  </table>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $("#myTable").DataTable();
+    });
   </script>
 }
