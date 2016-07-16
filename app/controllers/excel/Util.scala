@@ -31,7 +31,8 @@ object XlsxFile {
     }
     val creationHelper = workbook.getCreationHelper
     val evaluator = creationHelper.createFormulaEvaluator
-    lazy val body = bodyPoi.map {row =>
+    lazy val body: List[List[String]] = bodyPoi.map {row =>
+      val patternNegative = """\(([.0-9])\)""".r
       row.iterator.toList.map {cell =>
         cell.getCellType match {
           case Cell.CELL_TYPE_FORMULA => {
@@ -41,6 +42,7 @@ object XlsxFile {
           }
           case _ => {
             val s = formatter.formatCellValue(cell)
+            s
           }
         }
       }
