@@ -26,19 +26,51 @@ object XlsxFile {
     lazy val sheet = workbook.getSheetAt(0)
     lazy val headerPoi::bodyPoi = sheet.iterator.toList
     lazy val colmax = { headerPoi.iterator.toList.length }
-    val header = headerPoi.iterator.toList.map {cell =>
+    // val header = headerPoi.iterator.toList.map {cell =>
+    //   formatter.formatCellValue(cell)
+    // }
+    val header = headerPoi.iterator.toList.filter { cell =>
+      // headerPoi.toList(0).getCellStyle.getFillForegroundColorColor.asInstanceOf[XSSFColor]
+      // headerPoi.toList(1).getCellStyle.getFillForegroundColorColor.asInstanceOf[XSSFColor]
+      // headerPoi.toList(0).getCellStyle.getFillForegroundColor == IndexedColors.AUTOMATIC.getIndex()
+      // headerPoi.toList(1).getCellStyle.getFillForegroundColor == IndexedColors.AUTOMATIC.getIndex()
+      if (cell.getCellStyle.getFillForegroundColor == IndexedColors.AUTOMATIC.getIndex()) {
+        true
+      } else {
+        val color = cell.getCellStyle.getFillForegroundColorColor.asInstanceOf[XSSFColor]
+        color.getRGB.deep == Array(-1, -1, -1).deep
+      }
+      // val color = cell.getCellStyle.getFillForegroundColorColor.asInstanceOf[XSSFColor]
+      // color.
+    }.map { cell =>
       formatter.formatCellValue(cell)
     }
+    // // val cell = sheet.getRow(3).getCell(0); val style = cell.getCellStyle
+    // // import org.apache.poi.xssf.usermodel.XSSFColor
+    // // val color = cell.getCellStyle.getFillForegroundColorColor.asInstanceOf[XSSFColor]
+
     val creationHelper = workbook.getCreationHelper
     val evaluator = creationHelper.createFormulaEvaluator
     lazy val body: List[List[String]] = bodyPoi.map {row =>
       val patternNegative = """\(([.0-9])\)""".r
-      row.iterator.toList.map {cell =>
+      row.iterator.toList.filter { cell =>
+        if (cell.getCellStyle.getFillForegroundColor == IndexedColors.AUTOMATIC.getIndex()) {
+          true
+        } else {
+          val color = cell.getCellStyle.getFillForegroundColorColor.asInstanceOf[XSSFColor]
+          color.getRGB.deep == Array(-1, -1, -1).deep
+        }
+      }.map {cell =>
         cell.getCellType match {
           case Cell.CELL_TYPE_FORMULA => {
             // cell.getNumericCellValue.toString
             val cellResult = evaluator.evaluateInCell(cell)
-            formatter.formatCellValue(cellResult)
+            val s = formatter.formatCellValue(cellResult)
+            val pattern = """^ *\(([0-9]+)\) *$""".r
+            s match {
+              case pattern(num) => "-" + num.toString
+              case s2: String => if (s2 == "---") "" else s2
+            }
           }
           case _ => {
             val s = formatter.formatCellValue(cell)

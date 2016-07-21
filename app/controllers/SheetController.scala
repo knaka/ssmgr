@@ -120,7 +120,7 @@ class Sheet @Inject() extends Controller {
         case Right(l) => l
         case Left(_) => List[Int]()
       }
-      val body: List[List[String]] = range.map {row_idx =>
+      val body: List[List[(String, String)]] = range.map { row_idx =>
         SQL("""
           SELECT value
           FROM body
@@ -131,11 +131,18 @@ class Sheet @Inject() extends Controller {
         """).on(
           'sheet_id -> sheet_id,
           'row_idx -> row_idx
-        ).fold(List[String]()) { (list, row) =>
-          list :+ row[String]("value")
+        ).fold(List[(String, String)]()) { (list, row) =>
+          val value = row[String]("value")
+          val scode = """^ *([0-9][0-9][0-9][0-9]) *$""".r
+          list :+ (value -> (
+            value match {
+              case scode(code) => "http://stocks.finance.yahoo.co.jp/stocks/detail/?code=" + code
+              case _ => ""
+            }
+          ))
         } match {
           case Right(l) => l
-          case Left(_) => List[String]()
+          case Left(_) => List[(String, String)]()
         }
       }
       Ok(views.html.sheet(sheet_id, name, readable_name, header, body))

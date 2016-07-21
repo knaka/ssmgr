@@ -1,4 +1,4 @@
-@(id: Int, name: String, readable_name: String, header: List[String], body: List[List[String]])
+@(id: Int, name: String, readable_name: String, header: List[String], body: List[List[(String, String)]])
 
 @main("Sheet") {
   <form action="@routes.Sheet.update(name)" enctype="multipart/form-data" class="dropzone" id="my-awesome-dropzone" method="post">
@@ -31,16 +31,22 @@
     <tbody>
     @for(row <- body) {
       <tr>
-      @for(col <- row) {
+      @for((col, ex) <- row) {
         <td nowrap
           @{
-            val pattern = """^ *-?[0-9.,% ]+ *$""".r
+            val pattern = """^ *-?[()0-9.,% ]+ *$""".r
             pattern.findFirstIn(col) match {
               case Some(x) => "align=right"
               case _ => ""
             }
           }
-        >@col</td>
+        >
+        @if(ex == "") {
+          @col
+        } else {
+          <a href="@ex">@col</a>
+        }
+        </td>
       }
       </tr>
     }
