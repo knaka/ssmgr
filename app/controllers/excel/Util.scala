@@ -66,7 +66,7 @@ object XlsxFile {
             // cell.getNumericCellValue.toString
             val cellResult = evaluator.evaluateInCell(cell)
             val s = formatter.formatCellValue(cellResult)
-            val pattern = """^ *\(([0-9]+)\) *$""".r
+            val pattern = """^ *\(([0-9,]+)\) *$""".r
             s match {
               case pattern(num) => "-" + num.toString
               case s2: String => if (s2 == "---") "" else s2
