@@ -53,14 +53,14 @@ object XlsxFile {
     val evaluator = creationHelper.createFormulaEvaluator
     lazy val body: List[List[String]] = bodyPoi.map {row =>
       val patternNegative = """\(([.0-9])\)""".r
-      row.iterator.toList.filter { cell =>
+      row.iterator.toList /* .filter { cell =>
         if (cell.getCellStyle.getFillForegroundColor == IndexedColors.AUTOMATIC.getIndex()) {
           true
         } else {
           val color = cell.getCellStyle.getFillForegroundColorColor.asInstanceOf[XSSFColor]
           color.getRGB.deep == Array(-1, -1, -1).deep
         }
-      }.map {cell =>
+      } */ .map {cell =>
         cell.getCellType match {
           case Cell.CELL_TYPE_FORMULA => {
             // cell.getNumericCellValue.toString

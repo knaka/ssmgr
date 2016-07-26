@@ -133,7 +133,8 @@ class Sheet @Inject() extends Controller {
           'row_idx -> row_idx
         ).fold(List[(String, String)]()) { (list, row) =>
           val value = row[String]("value")
-          val scode = """^ *([0-9][0-9][0-9][0-9]) *$""".r
+          // val scode = """^ *([0-9][0-9][0-9][0-9]) *$""".r
+          val scode = """^ *([0-9][0-9][0-9][0-9])\.[TQ]\b *$""".r
           list :+ (value -> (
             value match {
               case scode(code) => "http://stocks.finance.yahoo.co.jp/stocks/detail/?code=" + code
