@@ -18,9 +18,8 @@ object XlsxFile {
   class XlsxFile(
     file: File
   ) {
-    // val filename: String = "/Users/knaka/doc/2016/sakuragumi/dummy_data_2-mod.xlsx"
-    // val filename: String = "/Users/knaka/doc/2016/sakuragumi/simple.xlsx"
-    // val file = new File(filename)
+    // val filename: String = "/Users/knaka/doc/2016/sakuragumi/dummy_data_2-mod.xlsx"; val file = new File(filename)
+    // val filename: String = "/Users/knaka/doc/2016/sakuragumi/simple.xlsx"; val file = new File(filename)
     lazy val formatter = new DataFormatter()
     lazy val workbook = WorkbookFactory.create(file)
     lazy val sheet = workbook.getSheetAt(0)
@@ -29,7 +28,7 @@ object XlsxFile {
     // val header = headerPoi.iterator.toList.map {cell =>
     //   formatter.formatCellValue(cell)
     // }
-    val header = headerPoi.iterator.toList.filter { cell =>
+    val header = headerPoi.iterator.toList /* .filter { cell =>
       // headerPoi.toList(0).getCellStyle.getFillForegroundColorColor.asInstanceOf[XSSFColor]
       // headerPoi.toList(1).getCellStyle.getFillForegroundColorColor.asInstanceOf[XSSFColor]
       // headerPoi.toList(0).getCellStyle.getFillForegroundColor == IndexedColors.AUTOMATIC.getIndex()
@@ -42,7 +41,7 @@ object XlsxFile {
       }
       // val color = cell.getCellStyle.getFillForegroundColorColor.asInstanceOf[XSSFColor]
       // color.
-    }.map { cell =>
+    } */ .map { cell =>
       formatter.formatCellValue(cell)
     }
     // // val cell = sheet.getRow(3).getCell(0); val style = cell.getCellStyle

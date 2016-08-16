@@ -17,6 +17,10 @@ import play.api.db.DB
 import java.util.UUID
 import java.util.UUID._
 
+import play.api.libs.json._
+
+// import java.util.Base64
+
 case class SheetData(
   name: String,
   readable_name: String
@@ -58,7 +62,7 @@ class Sheet @Inject() extends Controller {
     var l: List[(String, String)] = List()
     Future {
       DB.withConnection { implicit c =>
-        SQL("SELECT name, readable_name FROM sheet").fold(List[SheetData]()) { (list, row) =>
+        SQL("SELECT name, readable_name FROM sheet ORDER BY id").fold(List[SheetData]()) { (list, row) =>
           list :+ SheetData(row[String]("name"), row[String]("readable_name"))
         }
       }
@@ -99,22 +103,25 @@ class Sheet @Inject() extends Controller {
     // val id = MyUtil.getId(name)
     val (sheet_id, readable_name) = MyUtil.getIdName(name)
     DB.withConnection { implicit c =>
+      // Json.parse(jsonArray).as[JsArray].value.map(_.as[JsString].value).toList
       val header: List[String] = SQL("""
-        SELECT readable_name
+        SELECT columns
         FROM header
         WHERE sheet_id = {sheet_id}
-        ORDER BY col_idx
       """).on(
         'sheet_id -> sheet_id
       ).fold(List[String]()) { (list, row) =>
-        list :+ row[String]("readable_name")
+        // list :+ row[String]("columns")
+        list ++ Json.parse(row[String]("columns")).as[JsArray].value.map(_.as[JsString].value).toList
       } match {
         case Right(l) => l
         case Left(_) => List[String]()
       }
       val range: List[Int] = SQL("""
-        SELECT DISTINCT row_idx FROM body ORDER BY row_idx;
-      """).fold(List[Int]()) {(l, row) =>
+        SELECT DISTINCT row_idx FROM body where sheet_id = {sheet_id} ORDER BY row_idx;
+      """).on(
+        'sheet_id -> sheet_id
+      ).fold(List[Int]()) {(l, row) =>
         l :+ row[Int]("row_idx")
       } match {
         case Right(l) => l
@@ -122,25 +129,30 @@ class Sheet @Inject() extends Controller {
       }
       val body: List[List[(String, String)]] = range.map { row_idx =>
         SQL("""
-          SELECT value
+          SELECT columns
           FROM body
           WHERE
             sheet_id = {sheet_id} AND
             row_idx = {row_idx}
-          ORDER BY col_idx
         """).on(
           'sheet_id -> sheet_id,
           'row_idx -> row_idx
         ).fold(List[(String, String)]()) { (list, row) =>
-          val value = row[String]("value")
+          val value = row[String]("columns")
           // val scode = """^ *([0-9][0-9][0-9][0-9]) *$""".r
           val scode = """^ *([0-9][0-9][0-9][0-9])\.[TQ]\b *$""".r
-          list :+ (value -> (
-            value match {
-              case scode(code) => "http://stocks.finance.yahoo.co.jp/stocks/detail/?code=" + code
-              case _ => ""
-            }
-          ))
+          // list :+ (value -> (
+          //   value match {
+          //     case scode(code) => "http://stocks.finance.yahoo.co.jp/stocks/detail/?code=" + code
+          //     case _ => ""
+          //   }
+          // ))
+          list ++ (
+            Json.parse(value).as[JsArray].value.map(_.as[JsString].value).toList.map(v => (v, v match {
+            case scode(code) => "http://stocks.finance.yahoo.co.jp/stocks/detail/?code=" + code
+            case _ => ""
+            }))
+          )
         } match {
           case Right(l) => l
           case Left(_) => List[(String, String)]()
@@ -166,39 +178,30 @@ class Sheet @Inject() extends Controller {
           'colmax -> xlsx.colmax,
           'name -> name
         ).executeUpdate()
-        var col_idx = 0
         SQL("""
           DELETE FROM header WHERE sheet_id = {sheet_id};
         """).on('sheet_id -> sheet_id).execute()
         SQL("""
           DELETE FROM body WHERE sheet_id = {sheet_id};
         """).on('sheet_id -> sheet_id).execute()
-        xlsx.header.map {readable_name =>
-          val opt = SQL("""
-            INSERT INTO header (sheet_id, col_idx, readable_name)
-            VALUES ({sheet_id}, {col_idx}, {readable_name})
-          """).on(
-            'sheet_id -> sheet_id,
-            'col_idx -> col_idx,
-            'readable_name -> readable_name
-          ).executeInsert()
-          col_idx = col_idx + 1
-        }
+        val opt = SQL("""
+          INSERT INTO header (sheet_id, columns)
+          VALUES ({sheet_id}, {columns})
+        """).on(
+          'sheet_id -> sheet_id,
+          // 'columns -> Base64.getEncoder.encodeToString(xlsx.header.map(JsString).toString.getBytes)
+          'columns -> JsArray(xlsx.header.map(JsString)).toString
+        ).executeInsert()
         var row_idx = 0
         xlsx.body.map {row =>
-          var col_idx = 0
-          row.map {value =>
-            val opt = SQL("""
-              INSERT INTO body (sheet_id, row_idx, col_idx, value)
-              VALUES ({sheet_id}, {row_idx}, {col_idx}, {value})
-            """).on(
-              'sheet_id -> sheet_id,
-              'row_idx -> row_idx,
-              'col_idx -> col_idx,
-              'value -> value
-            ).executeInsert()
-            col_idx = col_idx + 1
-          }
+          val opt = SQL("""
+            INSERT INTO body (sheet_id, row_idx, columns)
+            VALUES ({sheet_id}, {row_idx}, {columns})
+          """).on(
+            'sheet_id -> sheet_id,
+            'row_idx -> row_idx,
+            'columns -> JsArray(row.map(JsString)).toString
+          ).executeInsert()
           row_idx = row_idx + 1
         }
       }

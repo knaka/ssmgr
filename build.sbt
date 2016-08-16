@@ -11,7 +11,8 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "anorm" % "2.4.0",
   cache,
   ws,
-  "mysql" % "mysql-connector-java" % "latest.integration",
+  // "mysql" % "mysql-connector-java" % "latest.integration",
+  "org.postgresql" % "postgresql" % "9.4-1201-jdbc41",
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test
 )
 

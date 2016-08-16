@@ -3,7 +3,7 @@
 # --- !Ups
 
 CREATE TABLE sheet (
-  id int NOT NULL AUTO_INCREMENT,
+  id SERIAL,
   name text,
   readable_name text,
   col_max int,
